@@ -67,22 +67,57 @@ new Vue({
                 this.TareaLlena = { 'id': '', 'titulo': '' };
                 this.errors = [];
                 $('#edit').modal('hide');
-                toastr.success('Tarea actualizada satisfactoriamente');
+                toastr.success('', 'Tarea actualizada satisfactoriamente', {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right"
+                });
             }).catch(error => {
                 this.errors = error.response.data.errors.titulo;
             });
         },
         deleteTareas: function(tarea) {
-            const confirmacion = confirm(`Desea eliminar la tarea ${tarea.id}`);
+
+            swal({
+                    title: "¿Esta seguro que desea eliminar esta tarea?",
+                    //text: "Once deleted, you will not be able to recover this imaginary file!",
+                    icon: "warning",
+                    dangerMode: true,
+                    buttons: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        var urlTareas = 'tareas/' + tarea.id;
+                        axios.delete(urlTareas).then(Response => {
+                            this.getTareas();
+                            toastr.success('', 'Tarea eliminada satisfactoriamente', {
+                                "closeButton": true,
+                                "positionClass": "toast-bottom-right"
+                            });
+                        });
+                    } else {
+                        toastr.error('', 'Operación Cancelada', {
+                            "closeButton": true,
+                            "positionClass": "toast-bottom-right"
+                        });
+                    }
+                });
+
+            /* const confirmacion = confirm(`Desea eliminar la tarea ${tarea.id}`);
             if (confirmacion) {
                 var urlTareas = 'tareas/' + tarea.id;
                 axios.delete(urlTareas).then(Response => {
                     this.getTareas();
-                    toastr.success('Tarea eliminada satisfactoriamente');
+                });
+                toastr.success('', 'Tarea eliminada satisfactoriamente', {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right"
                 });
             } else {
-                alert("Operación Cancelada")
-            }
+                toastr.error('', 'Operación Cancelado', {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right"
+                });
+            } */
         },
         createTarea: function() {
 
@@ -94,7 +129,10 @@ new Vue({
                 this.newTarea = '';
                 this.errors = [];
                 $('#create').modal('hide');
-                toastr.success('Tarea guardada satisfactoriamente');
+                toastr.success('', 'Tarea guardada satisfactoriamente', {
+                    "closeButton": true,
+                    "positionClass": "toast-bottom-right"
+                });
             }).catch(error => {
                 //if (error.response.status == 422) {
                 this.errors = error.response.data.errors.titulo;
